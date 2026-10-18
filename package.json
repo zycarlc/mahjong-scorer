@@ -1,0 +1,23 @@
+{
+  "name": "mahjong-scorer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy": "npm test && npm run build && touch dist/.nojekyll && cd dist && git init -q -b gh-pages && git add -A && git commit -qm deploy && git push -f https://github.com/zycarlc/mahjong-scorer.git gh-pages && rm -rf .git"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "preact": "^11.0.1"
+  }
+}

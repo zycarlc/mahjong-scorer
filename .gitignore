@@ -1,0 +1,6 @@
+node_modules
+dist
+
+# 總例 PDF 為香港麻雀協會版權所有，只留在本機
+*.pdf
+.github/
