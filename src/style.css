@@ -67,6 +67,7 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
   background: var(--bg);
   color: var(--ink);
   font-family: -apple-system, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', system-ui, sans-serif;
@@ -83,15 +84,16 @@ button {
 }
 
 .app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   max-width: 560px;
   margin: 0 auto;
-  padding-bottom: calc(110px + env(safe-area-inset-bottom));
-  overflow-x: clip;
 }
 
 .top {
-  position: sticky;
-  top: 0;
+  flex: none;
   z-index: 15;
   background: var(--felt);
   color: var(--felt-ink);
@@ -113,7 +115,13 @@ button {
 }
 
 main {
-  padding: 12px 12px 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 12px calc(110px + env(safe-area-inset-bottom));
+  align-content: start;
   display: grid;
   gap: 12px;
 }
