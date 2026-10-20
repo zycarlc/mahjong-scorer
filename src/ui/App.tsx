@@ -16,6 +16,7 @@ import {
   type FormState,
   type Mode,
 } from './builder';
+import { CheatSheet } from './CheatSheet';
 import { Tile } from './Tile';
 
 const SETTINGS_KEY = 'mahjong-scorer:settings';
@@ -64,6 +65,7 @@ export function App() {
   const [mode, setMode] = useState<Mode>('concealed');
   const [toast, setToast] = useState<string>();
   const [result, setResult] = useState<ScoreResult>();
+  const [cheatOpen, setCheatOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
   const update = (next: FormState) => {
@@ -135,8 +137,13 @@ export function App() {
   return (
     <div class="app">
       <header class="top">
-        <h1>港式台牌計番器</h1>
-        <p>港式十六張新章 · 香港麻雀協會總例</p>
+        <div>
+          <h1>港式台牌計番器</h1>
+          <p>港式十六張新章 · 香港麻雀協會總例</p>
+        </div>
+        <button class="top-btn" onClick={() => setCheatOpen(true)}>
+          番種表
+        </button>
       </header>
 
       <main>
@@ -322,6 +329,8 @@ export function App() {
           計番
         </button>
       </div>
+
+      <CheatSheet open={cheatOpen} onClose={() => setCheatOpen(false)} />
 
       {toast && (
         <div class="toast" role="status">

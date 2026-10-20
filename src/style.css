@@ -704,3 +704,185 @@ main {
   text-align: center;
   z-index: 10;
 }
+
+/* 番種表抽屜 */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.top-btn {
+  flex: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--felt-ink) 40%, transparent);
+  background: color-mix(in srgb, var(--felt-ink) 12%, transparent);
+  color: var(--felt-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.drawer.open {
+  pointer-events: auto;
+}
+
+.drawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.drawer.open .drawer-scrim {
+  opacity: 1;
+}
+
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100%, 440px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  box-shadow: -8px 0 24px rgb(0 0 0 / 0.2);
+}
+
+.drawer.open .drawer-panel {
+  transform: none;
+}
+
+.drawer-head {
+  background: var(--felt);
+  color: var(--felt-ink);
+  padding: calc(12px + env(safe-area-inset-top)) 16px 10px;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.drawer-close {
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  border: 0;
+  background: none;
+  color: var(--felt-ink);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.drawer-search {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 0;
+  font: inherit;
+  font-size: 16px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 12px calc(24px + env(safe-area-inset-bottom));
+}
+
+.drawer-body > .small {
+  margin: 16px 4px 0;
+}
+
+.cheat-row {
+  margin-top: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  scroll-margin-top: 8px;
+}
+
+.cheat-row.open {
+  border-color: var(--accent);
+}
+
+.cheat-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px 8px 14px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.cheat-top b {
+  flex: 1;
+}
+
+.cheat-fan {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chev {
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.cheat-row.open .chev {
+  transform: rotate(90deg);
+}
+
+.cheat-body {
+  padding: 0 14px 12px;
+}
+
+.cheat-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.cheat-ex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 8px;
+}
+
+.cheat-ex .tiles {
+  flex-wrap: wrap;
+}
