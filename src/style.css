@@ -89,11 +89,9 @@ button {
 }
 
 .app {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  /* iOS 主畫面 App：inset:0 / 100% 只到安全區，要用大視口高度才蓋滿整個螢幕 */
+  /* 不用 position:fixed，否則 iOS 26 會對頂部固定元素加捲動邊緣模糊 */
+  position: relative;
+  /* iOS 主畫面 App：100% 只到安全區，要用大視口高度才蓋滿整個螢幕 */
   height: 100vh;
   height: 100lvh;
   display: flex;
@@ -103,10 +101,8 @@ button {
 }
 
 .top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  flex: none;
   z-index: 15;
   background: var(--felt);
   color: var(--felt-ink);
@@ -133,8 +129,8 @@ main {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: calc(78px + env(safe-area-inset-top)) 12px calc(76px + max(8px, calc(env(safe-area-inset-bottom) - 22px)));
-  scroll-padding-top: calc(78px + env(safe-area-inset-top));
+  padding: 12px 12px calc(76px + max(8px, calc(env(safe-area-inset-bottom) - 22px)));
+  scroll-padding-top: 12px;
   align-content: start;
   display: grid;
   gap: 12px;
@@ -778,6 +774,7 @@ main {
 
 /* 番種表抽屜 */
 .top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
