@@ -27,7 +27,7 @@ interface Instance {
 const SUBSET_EXCLUDES: Record<string, string[]> = {
   雙般高: ['一般高'],
   一色三同順: ['一般高'],
-  一色四同順: ['一般高', '一色三同順'],
+  一色四同順: ['一般高', '一色三同順', '四同順'],
   三相逢: ['相逢'],
   雙同順: ['相逢'],
   五同順: ['四同順'],
@@ -63,6 +63,12 @@ const GLOBAL_EXCLUDES: Record<string, string[]> = {
   清五步高: ['雜三步高', '清三步高', '雜四步高', '清四步高'],
   金門橋: ['連環套'],
 };
+
+/**
+ * 四同順、五同順成立時，不再計單獨的般高（一般高）和相逢（見 README C.3）；
+ * 雙般高、三相逢、雙同順不在此列。
+ */
+const SAME_NUMBER_EXCLUDES = ['一般高', '相逢'];
 
 /** 有明／暗之分的番種 */
 const OPEN_HIDDEN = new Set([
@@ -237,7 +243,11 @@ function excludes(a: Instance, b: Instance): boolean {
 
 /** 在所有組合番種實例中，選出互不衝突、番數最高的一組 */
 export function bestPatterns(groups: Group[]): { name: FanName; fan: number }[] {
-  const all = findPatterns(groups).sort((x, y) => FAN[y.name] - FAN[x.name]);
+  let found = findPatterns(groups);
+  if (found.some((x) => x.type === '四同順' || x.type === '五同順')) {
+    found = found.filter((x) => !SAME_NUMBER_EXCLUDES.includes(x.type));
+  }
+  const all = found.sort((x, y) => FAN[y.name] - FAN[x.name]);
   const suffix: number[] = new Array(all.length + 1).fill(0);
   for (let i = all.length - 1; i >= 0; i--) suffix[i] = suffix[i + 1] + FAN[all[i].name];
 

@@ -26,12 +26,19 @@ describe('同順類', () => {
     expect(f).toMatchObject({ 明一色三同順: 30 });
   });
 
-  it('暗一色四同順，必然加計四同順；三組四歸四、十二歸另計', () => {
+  it('暗一色四同順不另計四同順；三組四歸四、十二歸另計', () => {
     const f = fanMap(score({ hand: '22223333444m789s11z', win: '4m', how: 'self' }));
-    expect(f).toMatchObject({ 暗一色四同順: 360, 四同順: 20, 暗四歸四: 360, 十二歸: 80 });
+    expect(f).toMatchObject({ 暗一色四同順: 360, 十二歸: 80 });
+    expect(f).not.toHaveProperty('四同順');
     expect(f).not.toHaveProperty('八歸');
     expect(f).not.toHaveProperty('一般高');
     expect(f).not.toHaveProperty('暗一色三同順');
+  });
+
+  it('四同順含一色三同順：一色三同順照計，不計般高、相逢', () => {
+    const f = fanMap(score({ hand: '234m234m234m23p789s11z', win: '4p', how: 'self' }));
+    expect(f).toMatchObject({ 暗一色三同順: 60, 四同順: 20 });
+    for (const k of ['一般高', '相逢']) expect(f).not.toHaveProperty(k);
   });
 
   it('相逢（兩色同順）', () => {
@@ -52,15 +59,22 @@ describe('同順類', () => {
     expect(f).not.toHaveProperty('相逢');
   });
 
-  it('四同順：必然加計雙般高、雙同順', () => {
+  it('四同順：不再計一般高、相逢，雙般高、雙同順照計', () => {
     const f = fanMap(score({ hand: '345m345m345p34p789s11z', win: '5p', how: 'self' }));
     expect(f).toMatchObject({ 四同順: 20, 雙般高: 20, 雙同順: 10 });
+    for (const k of ['一般高', '相逢']) expect(f).not.toHaveProperty(k);
   });
 
-  it('五同順（不計平糊、四同順）', () => {
+  it('四同順（345 萬筒索索）：不計一般高、相逢，三相逢照計', () => {
+    const f = fanMap(score({ hand: '34m345p345s55z', win: '5m', melds: 'c6s c3s' }));
+    expect(f).toMatchObject({ 四同順: 20, 明三相逢: 10 });
+    for (const k of ['一般高', '相逢']) expect(f).not.toHaveProperty(k);
+  });
+
+  it('五同順（不計平糊、四同順、一般高、相逢）', () => {
     const f = fanMap(score({ hand: '345m345m345p345p34s99s', win: '5s', how: 'self' }));
-    expect(f).toMatchObject({ 五同順: 60, 無字花: 5 });
-    for (const k of ['平糊', '大平糊', '四同順']) expect(f).not.toHaveProperty(k);
+    expect(f).toMatchObject({ 五同順: 60, 無字花: 5, 雙般高: 20 });
+    for (const k of ['平糊', '大平糊', '四同順', '一般高', '相逢']) expect(f).not.toHaveProperty(k);
   });
 
   it('單式結算例1：567萬 567筒 567筒 只算一個相逢和一副般高', () => {
