@@ -51,8 +51,8 @@ describe('平糊、門清、自摸', () => {
 describe('大雞 / 大鴨', () => {
   it('只有一隻爛花的一番：大雞', () => {
     const r = score(CHICKEN);
-    expect(fanMap(r)).toEqual({ 花牌: 1, 大雞: 60 });
-    expect(r.handFan).toBe(61);
+    expect(fanMap(r)).toEqual({ 花牌: 1, 大雞: 40 });
+    expect(r.handFan).toBe(41);
   });
 
   it('自摸：大鴨', () => {
@@ -70,15 +70,15 @@ describe('大雞 / 大鴨', () => {
   it('花上自摸會破壞大鴨', () => {
     expect(fanMap(score({ ...CHICKEN, how: 'self', flags: { flowerDraw: true } }))).toEqual({
       花牌: 1,
-      花上自摸: 5,
+      花上自摸: 1,
     });
   });
 
   it('莊家番不影響大雞', () => {
     const r = score({ ...CHICKEN, seat: 'E', flowers: '3f' });
-    expect(fanMap(r)).toEqual({ 花牌: 1, 大雞: 60 });
+    expect(fanMap(r)).toEqual({ 花牌: 1, 大雞: 40 });
     expect(r.dealerFans).toEqual([{ name: '莊家', fan: 1 }]);
-    expect(r.payments).toEqual([{ seat: 'W', fan: 62, amount: 62 }]);
+    expect(r.payments).toEqual([{ seat: 'W', fan: 42, amount: 42 }]);
   });
 });
 

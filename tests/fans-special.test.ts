@@ -6,17 +6,17 @@ describe('十三么', () => {
     const r = score({ hand: '19m1p19s12345677z456p', win: '9p' });
     expect(r.valid).toBe(true);
     expect(r.form).toBe('十三么');
-    expect(fanMap(r)).toEqual({ 十三么: 120, 獨獨: 2, 無花: 1 });
+    expect(fanMap(r)).toEqual({ 十三么: 130, 獨獨: 2, 無花: 1 });
   });
 
   it('十三扉十三么', () => {
     const r = score({ hand: '19m19p19s1234567z456p', win: '7z' });
-    expect(fanMap(r)).toEqual({ 十三么: 120, 十三扉: 20, 無花: 1 });
+    expect(fanMap(r)).toEqual({ 十三么: 130, 十三扉: 20, 無花: 1 });
   });
 
   it('十三么可以複合門叮及門摸', () => {
     const r = score({ hand: '19m19p19s1234567z456p', win: '7z', how: 'self', flags: { ting: true } });
-    expect(fanMap(r)).toEqual({ 十三么: 120, 十三扉: 20, 門叮: 15, 門摸: 5, 無花: 1 });
+    expect(fanMap(r)).toEqual({ 十三么: 130, 十三扉: 20, 門叮: 15, 門摸: 5, 無花: 1 });
   });
 });
 
@@ -24,12 +24,12 @@ describe('十六不搭', () => {
   it('十六扉不搭', () => {
     const r = score({ hand: '159m148p269s1234567z', win: '1z' });
     expect(r.form).toBe('十六不搭');
-    expect(fanMap(r)).toEqual({ 十六不搭: 60, 十六扉不搭: 20, 無花: 1 });
+    expect(fanMap(r)).toEqual({ 十六不搭: 50, 十六扉不搭: 20, 無花: 1 });
   });
 
   it('十六不搭（叫少於十六扉）', () => {
     const r = score({ hand: '159m14p269s12345671z', win: '8p' });
-    expect(fanMap(r)).toEqual({ 十六不搭: 60, 無花: 1 });
+    expect(fanMap(r)).toEqual({ 十六不搭: 50, 無花: 1 });
   });
 
   it('不搭三相：三門數字相同', () => {

@@ -75,7 +75,7 @@ describe('三元、風', () => {
 
   it('大四喜（不計字牌、正字）', () => {
     const f = fanMap(score({ hand: '111z222z333z444z67p99s', win: '8p' }));
-    expect(f).toMatchObject({ 大四喜: 180 });
+    expect(f).toMatchObject({ 大四喜: 160 });
     expect(f).not.toHaveProperty('小四喜');
     expect(f).not.toHaveProperty('字牌');
     expect(f).not.toHaveProperty('正字');

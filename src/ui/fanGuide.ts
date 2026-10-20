@@ -67,7 +67,7 @@ export const CHEATSHEET: CheatSection[] = [
       e(['明雜龍', '暗雜龍'], '三門分別有 123、456、789', '123m 456p 789s'),
       e(['明清龍', '暗清龍'], '同一門 123、456、789', '123s 456s 789s'),
       e('老少順', '同一門 123 及 789', '123p 789p'),
-      e('雙老少順', '兩副老少順', '123m 789m 123p 789p'),
+      e(['明雙老少順', '暗雙老少順'], '兩副老少順（不計老少順、雙同順、相逢）', '123m 789m 123p 789p'),
       e('一般高', '兩副完全相同的順子', '345m 345m'),
       e('雙般高', '兩組獨立的一般高', '234p 234p 678s 678s'),
       e(['明一色三同順', '暗一色三同順'], '三副完全相同的順子', '456s 456s 456s'),
@@ -224,4 +224,27 @@ export function fanLabel(entry: CheatEntry): string {
 /** 標題：明暗兩種只顯示共同名稱，例如「雜龍」 */
 export function entryTitle(entry: CheatEntry): string {
   return entry.names.length === 2 ? entry.names[0].slice(1) : entry.names[0];
+}
+
+/**
+ * 繁→簡（只包括番種表用到的字），另把常見異寫統一：糊／胡、么／幺、番／翻。
+ * 搜尋時兩邊都轉成同一寫法，簡體、繁體輸入都找得到。
+ */
+const FOLD: Record<string, string> = Object.fromEntries(
+  [
+    ...'個个內内兩两別别單单實实將将對对帶带後后態态應应搶抢撈捞數数斷断於于時时東东槓杠橋桥歸归沒没滿满無无爛烂狀状獨独環环發发純纯組组續续與与莊庄萬万蘭兰補补計计過过連连釣钓銃铳錯错門门開开閒闲隻只雙双雜杂雞鸡響响順顺須须風风齊齐龍龙鴨鸭張张嚦呖'.match(/../g)!,
+    '糊胡',
+    '么幺',
+    '番翻',
+  ].map((pair) => [pair[0], pair[1]]),
+);
+
+const fold = (s: string) => [...s].map((c) => FOLD[c] ?? c).join('');
+
+/** 按名稱或說明搜尋番種；空白查詢回傳全部 */
+export function searchFans(query: string): CheatEntry[] {
+  const all = CHEATSHEET.flatMap((s) => s.entries);
+  const q = fold(query.trim());
+  if (!q) return all;
+  return all.filter((x) => x.names.some((n) => fold(n).includes(q)) || fold(x.desc).includes(q));
 }

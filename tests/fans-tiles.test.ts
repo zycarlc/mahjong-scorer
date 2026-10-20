@@ -102,7 +102,7 @@ describe('花色類', () => {
 describe('字牌類', () => {
   it('字一色（必然加計對對糊；不計混么、混帶么）', () => {
     const f = fanMap(score({ hand: '222z333z555z666z7z', win: '7z', melds: 'p1z' }));
-    expect(f).toMatchObject({ 字一色: 240, 對對糊: 40, 大三風: 60 });
+    expect(f).toMatchObject({ 字一色: 180, 對對糊: 40, 大三風: 60 });
     expect(f).not.toHaveProperty('混么');
     expect(f).not.toHaveProperty('混帶么');
     expect(f).not.toHaveProperty('混一色');

@@ -91,12 +91,20 @@ describe('龍、老少', () => {
     expect(fanMap(score({ hand: '123p789p456m67s111z99m', win: '8s' }))).toMatchObject({ 老少順: 3 });
   });
 
-  it('雙老少順（不計老少順、雙同順、相逢）', () => {
-    const f = fanMap(score({ hand: '123m789m123p78p456s11z', win: '9p' }));
-    expect(f).toMatchObject({ 雙老少順: 25 });
+  it('暗雙老少順（自摸）', () => {
+    expect(fanMap(score({ hand: '123m789m123p78p456s11z', win: '9p', how: 'self' }))).toMatchObject({ 暗雙老少順: 30 });
+  });
+
+  it('明雙老少順（不計老少順）', () => {
+    const f = fanMap(score({ hand: '123m123m789m78m456s11z', win: '9m' }));
+    expect(f).toMatchObject({ 明雙老少順: 15, 雙般高: 20 });
     expect(f).not.toHaveProperty('老少順');
-    expect(f).not.toHaveProperty('雙同順');
-    expect(f).not.toHaveProperty('相逢');
+  });
+
+  it('兩門的明雙老少順只得 15，高點法改計老少順 ×2 + 雙同順（16）', () => {
+    const f = fanMap(score({ hand: '123m789m123p78p456s11z', win: '9p' }));
+    expect(f).toMatchObject({ 老少順: 6, 雙同順: 10 });
+    expect(f).not.toHaveProperty('明雙老少順');
   });
 });
 

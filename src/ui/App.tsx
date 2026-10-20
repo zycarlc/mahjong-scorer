@@ -17,6 +17,7 @@ import {
   type Mode,
 } from './builder';
 import { CheatSheet } from './CheatSheet';
+import { PullCard } from './PullCard';
 import { Tile } from './Tile';
 
 const SETTINGS_KEY = 'mahjong-scorer:settings';
@@ -312,6 +313,8 @@ export function App() {
           </div>
         )}
 
+        <PullCard result={result} />
+
         <RulesNote />
       </main>
 
@@ -549,13 +552,13 @@ function RulesNote() {
     <details class="card rules">
       <summary>計番說明</summary>
       <ul>
-        <li>番數以總例「番種簡表」為準。簡表與「番種詳述」不同之處：{DISCREPANCIES.map((d) => `${d.name} ${d.summary}（詳述 ${d.detail}）`).join('；')}。</li>
+        <li>番數以總例「番種簡表」為準。簡表與「番種詳述」不同之處，以 hktwmjtgt.com 番表為準：{DISCREPANCIES.map((d) => `${d.name} ${d.adopted}（簡表 ${d.summary}、詳述 ${d.detail}）`).join('；')}。</li>
         <li>高點法：同一副牌有多種拆法時，取番數最高者；單式結算：同類番種的面子共用率低於 50% 才可重複計算。</li>
         <li>不複合原則：較高番種必然包含的較低番種不計；花、字牌、莊家不受影響。</li>
         <li>莊家 1 番、拉莊每連一莊 2 番，只在莊家食糊、出銃或被自摸時加計。</li>
         <li>門清：沒有上／碰（暗槓、大明槓仍算門清）。</li>
         <li>嚦咕兩食：基本形與嚦咕形番數相加，花、門清、叮、時態等只計一次。</li>
-        <li>「拉／踢」跨局結算及暗槓、七搶一等中途獎勵不在此計算內。</li>
+        <li>拉／踢跨局結算見「拉賬」；暗槓、七搶一等中途獎勵不在計番結果內。</li>
       </ul>
     </details>
   );

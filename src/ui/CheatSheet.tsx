@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { parseTiles } from '../engine/tiles';
-import { CHEATSHEET, entryTitle, fanLabel, type CheatEntry } from './fanGuide';
+import { entryTitle, fanLabel, searchFans, type CheatEntry } from './fanGuide';
 import { Tile } from './Tile';
 
 /** 番種速查抽屜 */
@@ -20,11 +20,7 @@ export function CheatSheet({ open, onClose }: { open: boolean; onClose: () => vo
     };
   }, [open]);
 
-  const entries = useMemo(() => {
-    const q = query.trim();
-    const all = CHEATSHEET.flatMap((s) => s.entries);
-    return q ? all.filter((x) => x.names.some((n) => n.includes(q)) || x.desc.includes(q)) : all;
-  }, [query]);
+  const entries = useMemo(() => searchFans(query), [query]);
 
   // 一次只展開一個番種
   const toggle = (key: string) => {

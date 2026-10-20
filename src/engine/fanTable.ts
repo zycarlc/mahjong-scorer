@@ -1,6 +1,6 @@
 /**
  * 番數表。以《港式十六張新章麻雀總例》（2025年7月28日修訂）的「番種簡表」為準；
- * 簡表與「番種詳述」不一致之處，記錄於 DISCREPANCIES。
+ * 簡表與「番種詳述」不一致之處，以 hktwmjtgt.com 番表（V1 · 2026年9月）為準，記錄於 DISCREPANCIES。
  */
 export const FAN = {
   // 莊花字狀態類
@@ -28,7 +28,7 @@ export const FAN = {
   一台花: 10,
   八仙過海: 40,
   七搶一: 30,
-  大雞: 60,
+  大雞: 40,
   大鴨: 30,
   // 順子類
   平糊: 5,
@@ -38,7 +38,8 @@ export const FAN = {
   明清龍: 15,
   暗清龍: 30,
   老少順: 3,
-  雙老少順: 25,
+  明雙老少順: 15,
+  暗雙老少順: 30,
   一般高: 5,
   雙般高: 20,
   明一色三同順: 30,
@@ -115,13 +116,13 @@ export const FAN = {
   小七門: 15,
   大七門: 30,
   // 字牌類
-  字一色: 240,
+  字一色: 180,
   小三元: 40,
   大三元: 80,
   小三風: 30,
   大三風: 60,
   小四喜: 120,
-  大四喜: 180,
+  大四喜: 160,
   // 四歸類
   明四歸二: 5,
   暗四歸二: 10,
@@ -132,9 +133,9 @@ export const FAN = {
   八歸: 20,
   十二歸: 80,
   // 特殊類
-  十三么: 120,
+  十三么: 130,
   十三扉: 20,
-  十六不搭: 60,
+  十六不搭: 50,
   十六扉不搭: 20,
   不搭三相: 20,
   不搭雜龍: 30,
@@ -162,7 +163,7 @@ export const FAN = {
   雙響: 5,
   三響: 10,
   海底撈月: 10,
-  花上自摸: 5,
+  花上自摸: 1,
   槓上自摸: 5,
   搶槓: 10,
   尾牌連摸: 5, // 5 × 2^(n−1)
@@ -227,13 +228,13 @@ export const HAND_EXCLUDES: Partial<Record<FanName, FanName[]>> = {
   尾牌連摸: ['自摸', '花上自摸', '槓上自摸'],
 };
 
-/** 簡表與詳述不一致之處（本程式採用簡表） */
-export const DISCREPANCIES: { name: string; summary: string; detail: string }[] = [
-  { name: '大四喜', summary: '180', detail: '160' },
-  { name: '字一色', summary: '240', detail: '120' },
-  { name: '大雞 / 大鴨', summary: '60 / 30', detail: '40 / 20' },
-  { name: '十三么', summary: '120', detail: '100' },
-  { name: '十六不搭', summary: '60', detail: '50' },
-  { name: '雙老少順', summary: '25', detail: '15' },
-  { name: '花上自摸（花摸）', summary: '5', detail: '2' },
+/** 簡表與詳述不一致之處：採用 hktwmjtgt.com 番表的番數（adopted） */
+export const DISCREPANCIES: { name: string; summary: string; detail: string; adopted: string }[] = [
+  { name: '大四喜', summary: '180', detail: '160', adopted: '160' },
+  { name: '字一色', summary: '240', detail: '120', adopted: '180' },
+  { name: '大雞 / 大鴨', summary: '60 / 30', detail: '40 / 20', adopted: '40 / 30' },
+  { name: '十三么', summary: '120', detail: '100', adopted: '130' },
+  { name: '十六不搭', summary: '60', detail: '50', adopted: '50' },
+  { name: '雙老少順', summary: '25', detail: '15', adopted: '明 15 / 暗 30' },
+  { name: '花上自摸（花摸）', summary: '5', detail: '2', adopted: '1' },
 ];

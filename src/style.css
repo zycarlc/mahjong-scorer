@@ -886,3 +886,140 @@ main {
 .cheat-ex .tiles {
   flex-wrap: wrap;
 }
+
+/* 拉賬 */
+.pull-status {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.pull-kou {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.pull-input {
+  display: flex;
+  gap: 8px;
+}
+
+.pull-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.pull-input .btn {
+  flex: none;
+  padding: 0 22px;
+}
+
+.pull-input .btn:disabled {
+  opacity: 0.4;
+}
+
+.pull .chips {
+  margin-top: 8px;
+}
+
+.pull-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pull-actions .btn {
+  flex: 1;
+  min-width: 96px;
+  font-size: 0.95rem;
+}
+
+.pull-rules {
+  margin-top: 12px;
+}
+
+.pull-rules summary {
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.pull-rules p,
+.pull-rules ul {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.pull-rules ul {
+  padding-left: 1.2em;
+}
+
+.pull-rules li + li {
+  margin-top: 4px;
+}
+
+.pull-log {
+  list-style: none;
+  margin: 8px 0 12px;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.pull-log li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+
+.pull-no {
+  flex: none;
+  width: 3.6em;
+  color: var(--muted);
+}
+
+.pull-log input {
+  flex: none;
+  width: 72px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.pull-calc {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pull-del {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+}

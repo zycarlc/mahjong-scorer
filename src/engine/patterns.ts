@@ -66,6 +66,7 @@ const GLOBAL_EXCLUDES: Record<string, string[]> = {
 
 /** 有明／暗之分的番種 */
 const OPEN_HIDDEN = new Set([
+  '雙老少順',
   '雜龍',
   '清龍',
   '一色三同順',
