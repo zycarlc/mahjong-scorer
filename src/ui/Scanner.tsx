@@ -1,18 +1,20 @@
 import { useRef, useState } from 'preact/hooks';
 import { tileName } from '../engine/tiles';
+import { LiveScanner } from './LiveScanner';
 import { Tile } from './Tile';
 
 interface Props {
   onApply: (tiles: string[]) => void;
 }
 
-/** 影相／選相辨識麻雀牌，確認後加入暗手 */
+/** 鏡頭即時辨識／選相辨識麻雀牌，確認後加入暗手 */
 export function Scanner({ onApply }: Props) {
   const camera = useRef<HTMLInputElement>(null);
   const album = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string>();
   const [error, setError] = useState<string>();
   const [found, setFound] = useState<string[]>();
+  const [live, setLive] = useState(false);
 
   const onFile = async (e: Event) => {
     const el = e.target as HTMLInputElement;
@@ -40,13 +42,34 @@ export function Scanner({ onApply }: Props) {
       <input ref={camera} type="file" accept="image/*" capture="environment" hidden onChange={onFile} />
       <input ref={album} type="file" accept="image/*" hidden onChange={onFile} />
       <div class="scan-actions">
-        <button class="scan-btn" disabled={!!busy} onClick={() => camera.current?.click()}>
-          📷 影相辨識
+        <button
+          class="scan-btn"
+          disabled={!!busy}
+          onClick={() => {
+            setError(undefined);
+            setFound(undefined);
+            setLive(true);
+          }}
+        >
+          📷 鏡頭辨識
         </button>
         <button class="scan-btn" disabled={!!busy} onClick={() => album.current?.click()}>
           🖼️ 從相簿選擇
         </button>
       </div>
+      {live && (
+        <LiveScanner
+          onClose={() => setLive(false)}
+          onResult={(tiles) => {
+            setLive(false);
+            setFound(tiles);
+          }}
+          onFallback={() => {
+            setLive(false);
+            camera.current?.click();
+          }}
+        />
+      )}
       {busy && <p class="muted small">{busy}</p>}
       {error && <p class="scan-err">{error}</p>}
       {found && (

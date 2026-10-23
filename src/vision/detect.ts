@@ -18,21 +18,36 @@ function load() {
   return loading;
 }
 
-/** 辨識相片中的麻雀牌，按閱讀次序回傳 */
-export async function detectTiles(img: ImageBitmap | HTMLImageElement, onStatus?: (s: string) => void): Promise<Detection[]> {
+export type Source = ImageBitmap | HTMLImageElement | HTMLVideoElement;
+
+export function sourceSize(img: Source): [number, number] {
+  if (img instanceof HTMLVideoElement) return [img.videoWidth, img.videoHeight];
+  if (img instanceof HTMLImageElement) return [img.naturalWidth, img.naturalHeight];
+  return [img.width, img.height];
+}
+
+/** 預先載入模型（例如開啟鏡頭時） */
+export async function preload(): Promise<void> {
+  await load();
+}
+
+let canvas: HTMLCanvasElement | undefined;
+
+/** 辨識相片或影片當前畫面中的麻雀牌，按閱讀次序回傳（座標為原圖像素） */
+export async function detectTiles(img: Source, onStatus?: (s: string) => void): Promise<Detection[]> {
   onStatus?.('載入辨識模型…');
   const { ort, session } = await load();
   onStatus?.('辨識中…');
 
-  const sw = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
-  const sh = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
+  const [sw, sh] = sourceSize(img);
+  if (!sw || !sh) return [];
   const scale = Math.min(INPUT_SIZE / sw, INPUT_SIZE / sh);
   const nw = Math.round(sw * scale);
   const nh = Math.round(sh * scale);
   const padX = (INPUT_SIZE - nw) / 2;
   const padY = (INPUT_SIZE - nh) / 2;
 
-  const canvas = document.createElement('canvas');
+  canvas ??= document.createElement('canvas');
   canvas.width = canvas.height = INPUT_SIZE;
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
   ctx.fillStyle = 'rgb(114,114,114)';
