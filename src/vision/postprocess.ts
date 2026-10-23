@@ -42,7 +42,7 @@ function iou(a: Detection, b: Detection): number {
   return union > 0 ? inter / union : 0;
 }
 
-export function parseOutput(data: ArrayLike<number>, scoreThreshold = 0.4, iouThreshold = 0.5): Detection[] {
+export function parseOutput(data: ArrayLike<number>, scoreThreshold = 0.25, iouThreshold = 0.5): Detection[] {
   const cands: Detection[] = [];
   for (let i = 0; i < NUM_ANCHORS; i++) {
     let best = -1;
