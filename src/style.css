@@ -470,14 +470,9 @@ main {
     color: var(--man);
 }
 
-.tile-p b,
-.tile-p i {
-    color: var(--pin);
-}
-
-.tile-s b,
-.tile-s i {
-    color: var(--sou);
+.tile-art {
+    width: 86%;
+    height: 90%;
 }
 
 .tile-honor b {
@@ -1131,4 +1126,39 @@ main {
 .drawer-panel.dragging ~ .drawer-scrim,
 .drawer.dragging .drawer-scrim {
     transition: none;
+}
+
+/* 影相辨識 */
+.scanner {
+    margin-bottom: 10px;
+}
+
+.scan-btn {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--card);
+    border-radius: 8px;
+    padding: 8px 14px;
+    min-height: 40px;
+    font-weight: 700;
+}
+
+.scan-btn.ghost {
+    background: var(--bg);
+    color: var(--accent);
+}
+
+.scan-btn:disabled {
+    opacity: 0.5;
+}
+
+.scan-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.scan-err {
+    color: var(--man);
+    font-size: 0.85rem;
 }

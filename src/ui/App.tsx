@@ -18,6 +18,7 @@ import {
 } from './builder';
 import { CheatSheet } from './CheatSheet';
 import { PullCard } from './PullCard';
+import { Scanner } from './Scanner';
 import { Tile } from './Tile';
 
 const SETTINGS_KEY = 'mahjong-scorer:settings';
@@ -103,6 +104,18 @@ export function App() {
     // 暗手滿了便自動轉去揀食糊牌
     if (m === 'concealed' && next.concealed.length === concealedTarget(next) && !next.winningTile) setMode('win');
     if (m !== 'concealed' && m !== 'win' && m !== 'flower') setMode('concealed');
+  };
+
+  const applyScan = (tiles: string[]) => {
+    let cur = s;
+    let skipped = 0;
+    for (const t of tiles) {
+      const next = addTile(cur, 'concealed', t);
+      if (typeof next === 'string') skipped++;
+      else cur = next;
+    }
+    update(cur);
+    setToast(skipped ? `已加入 ${tiles.length - skipped} 張，${skipped} 張因超出張數或四張上限而略過` : `已加入 ${tiles.length} 張`);
   };
 
   const setWinType = (winType: WinType) => {
@@ -260,6 +273,7 @@ export function App() {
           </div>
 
           <div class="picker">
+            {!isFlowerWin && <Scanner onApply={applyScan} />}
             {!isFlowerWin && (
               <>
                 <div class="modes" role="tablist">
