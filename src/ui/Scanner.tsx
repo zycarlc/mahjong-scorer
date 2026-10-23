@@ -1,4 +1,4 @@
-import { useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { tileName } from '../engine/tiles';
 import { LiveScanner } from './LiveScanner';
 import { Tile } from './Tile';
@@ -15,6 +15,12 @@ export function Scanner({ onApply }: Props) {
   const [error, setError] = useState<string>();
   const [found, setFound] = useState<string[]>();
   const [live, setLive] = useState(false);
+  const result = useRef<HTMLDivElement>(null);
+
+  // 辨識完捲到結果，免得被底部的計番按鈕遮住
+  useEffect(() => {
+    if (found) result.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [found !== undefined]);
 
   const onFile = async (e: Event) => {
     const el = e.target as HTMLInputElement;
@@ -73,7 +79,7 @@ export function Scanner({ onApply }: Props) {
       {busy && <p class="muted small">{busy}</p>}
       {error && <p class="scan-err">{error}</p>}
       {found && (
-        <div class="scan-result">
+        <div class="scan-result" ref={result}>
           {found.length === 0 ? (
             <p class="muted small">未能辨認到牌，請在光線充足處、牌排成一行再影過。</p>
           ) : (

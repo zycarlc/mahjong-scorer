@@ -1,3 +1,4 @@
+import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { tileName } from '../engine/tiles';
 import type { Detection } from '../vision/postprocess';
@@ -70,7 +71,8 @@ export function LiveScanner({ onResult, onClose, onFallback }: Props) {
   const tiles = dets.map((d) => d.tile);
   const [w, h] = size ?? [16, 9];
 
-  return (
+  // 掛到 body，避免被頁面內的疊層（例如浮動的計番按鈕）蓋住
+  return createPortal(
     <div class="live" role="dialog" aria-modal="true" aria-label="鏡頭辨識">
       <div class="live-head">
         <b>鏡頭辨識</b>
@@ -125,6 +127,7 @@ export function LiveScanner({ onResult, onClose, onFallback }: Props) {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
