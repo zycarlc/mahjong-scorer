@@ -8,7 +8,8 @@ interface Props {
 
 /** 影相／選相辨識麻雀牌，確認後加入暗手 */
 export function Scanner({ onApply }: Props) {
-  const input = useRef<HTMLInputElement>(null);
+  const camera = useRef<HTMLInputElement>(null);
+  const album = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string>();
   const [error, setError] = useState<string>();
   const [found, setFound] = useState<string[]>();
@@ -36,11 +37,17 @@ export function Scanner({ onApply }: Props) {
 
   return (
     <div class="scanner">
-      <input ref={input} type="file" accept="image/*" capture="environment" hidden onChange={onFile} />
-      <button class="scan-btn" disabled={!!busy} onClick={() => input.current?.click()}>
-        📷 影相辨識
-      </button>
-      {busy && <span class="muted small"> {busy}</span>}
+      <input ref={camera} type="file" accept="image/*" capture="environment" hidden onChange={onFile} />
+      <input ref={album} type="file" accept="image/*" hidden onChange={onFile} />
+      <div class="scan-actions">
+        <button class="scan-btn" disabled={!!busy} onClick={() => camera.current?.click()}>
+          📷 影相辨識
+        </button>
+        <button class="scan-btn" disabled={!!busy} onClick={() => album.current?.click()}>
+          🖼️ 從相簿選擇
+        </button>
+      </div>
+      {busy && <p class="muted small">{busy}</p>}
       {error && <p class="scan-err">{error}</p>}
       {found && (
         <div class="scan-result">
