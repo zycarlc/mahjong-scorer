@@ -98,3 +98,8 @@ npm run build    # 輸出到 dist/
 
 - 現時：在本機執行 `npm run deploy`（測試 → 建置 → 推送 `dist/` 到 `gh-pages` 分支）。
 - `.github/workflows/deploy.yml`（只在本機，未推送）可在每次 push 到 main 時自動部署；推送它需要具 `workflow` 權限的 GitHub token。
+
+## 麻雀牌圖案及影相辨識
+
+- 牌面：筒子、索子以 SVG 圖案繪出，萬子及字牌為牌面上的單字（`src/ui/Tile.tsx`）。
+- 影相辨識：「📷 鏡頭辨識」開啟網頁內的鏡頭畫面，即時框出辨識到的牌，對準至結果正確後按「用這個結果」（鏡頭無法使用時可改用系統相機，`src/ui/LiveScanner.tsx`）；「🖼️ 從相簿選擇」辨識現有相片。兩者都以瀏覽器內的 [Mahjong-YOLO](https://github.com/nikmomo/Mahjong-YOLO)（MIT，YOLO11n ONNX，`public/models/`）經 `onnxruntime-web`（WASM）在本機辨識，相片不會上傳。辨識結果可先刪除錯誤項目（例如寶牌指示牌）才加入暗手。模型沒有花牌類別，赤五當作普通五。解析及類別對照在 `src/vision/postprocess.ts`（模型用天鳳記法，5z 白、7z 中，已對調）。
