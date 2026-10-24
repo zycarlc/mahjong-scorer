@@ -790,7 +790,7 @@ main {
     font-size: 0.9rem;
     max-width: calc(100% - 32px);
     text-align: center;
-    z-index: 10;
+    z-index: 50;
 }
 
 /* 番種表抽屜 */
@@ -1259,4 +1259,179 @@ main {
 .live-tiles {
     min-height: 32px;
     align-items: center;
+}
+
+/* 砌牌抽屜（由下而上） */
+.add-btn {
+    width: 100%;
+    margin-top: 10px;
+    min-height: 48px;
+    border: 1px dashed var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+}
+
+.sheet.open {
+    pointer-events: auto;
+}
+
+.sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.4);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.sheet.open .sheet-scrim {
+    opacity: 1;
+}
+
+.sheet-panel {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(100%, 560px);
+    max-height: 88dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 24px rgb(0 0 0 / 0.2);
+    transform: translate(-50%, 100%);
+    transition: transform 0.28s ease;
+}
+
+.sheet.open .sheet-panel {
+    transform: translate(-50%, 0);
+}
+
+.sheet-grab {
+    flex: none;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px;
+    touch-action: none;
+}
+
+.sheet-grab span {
+    width: 40px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--line);
+}
+
+.sheet-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 8px;
+}
+
+.sheet-head h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.sheet-done {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--accent);
+    color: var(--card);
+    font-weight: 700;
+}
+
+.sheet-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+.sheet-hand {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+}
+
+.sheet-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    padding: 4px 0;
+}
+
+.sheet-line + .sheet-line {
+    border-top: 1px dashed var(--line);
+}
+
+.sheet-tag {
+    flex: none;
+    min-width: 3.2em;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sheet-win {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 10px;
+    background: var(--line);
+    margin-bottom: 8px;
+}
+
+.side button {
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--ink);
+    font-size: 1rem;
+}
+
+.side button.on {
+    background: var(--card);
+    color: var(--accent);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+}
+
+.sheet .scanner {
+    margin: 4px 0 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sheet-panel {
+        transition: none;
+    }
+}
+
+.sheet.dragging .sheet-panel {
+    transition: none;
 }

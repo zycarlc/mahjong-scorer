@@ -81,3 +81,49 @@ export function sortReadingOrder(dets: Detection[]): Detection[] {
   }
   return rows.flatMap((r) => r.sort((a, b) => a.x - b.x));
 }
+
+/**
+ * 多幀投票：把一段時間內的逐幀偵測按位置歸類，同一位置取各幀總分最高的牌，
+ * 只保留在過半數幀中出現的位置，令即時結果不會逐幀跳動。
+ */
+export function voteDetections(frames: Detection[][]): Detection[] {
+  interface Cluster {
+    box: Detection;
+    hits: Detection[];
+    frames: Set<number>;
+  }
+  const clusters: Cluster[] = [];
+  frames.forEach((dets, f) => {
+    for (const d of dets) {
+      let best: Cluster | undefined;
+      let bestIou = 0.4;
+      for (const c of clusters) {
+        if (c.frames.has(f)) continue;
+        const o = iou(c.box, d);
+        if (o > bestIou) {
+          bestIou = o;
+          best = c;
+        }
+      }
+      if (!best) {
+        clusters.push({ box: d, hits: [d], frames: new Set([f]) });
+        continue;
+      }
+      best.hits.push(d);
+      best.frames.add(f);
+      const n = best.hits.length;
+      const avg = (k: 'x' | 'y' | 'w' | 'h') => best!.hits.reduce((a, h) => a + h[k], 0) / n;
+      best.box = { ...best.box, x: avg('x'), y: avg('y'), w: avg('w'), h: avg('h') };
+    }
+  });
+  const need = Math.ceil(frames.length / 2);
+  const out: Detection[] = [];
+  for (const c of clusters) {
+    if (c.frames.size < need) continue;
+    const score = new Map<string, number>();
+    for (const h of c.hits) score.set(h.tile, (score.get(h.tile) ?? 0) + h.score);
+    const [tile] = [...score.entries()].sort((a, b) => b[1] - a[1])[0];
+    out.push({ ...c.box, tile, score: score.get(tile)! / c.frames.size });
+  }
+  return sortReadingOrder(out);
+}

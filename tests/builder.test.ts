@@ -80,3 +80,22 @@ describe('砌牌器', () => {
     expect(toInput(s).discarder).toBeUndefined();
   });
 });
+
+describe('影相輸入明牌', () => {
+  it('自動砌成上、碰、槓，砌不成的略過', async () => {
+    const { addScanned } = await import('../src/ui/builder');
+    const r = addScanned(initialState(), parseTiles('123m 555p 7777s 7z'), true);
+    expect(r.state.melds).toEqual([
+      { kind: 'chow', tile: '1m' },
+      { kind: 'pung', tile: '5p' },
+      { kind: 'kong', tile: '7s' },
+    ]);
+    expect(r.added).toBe(10);
+    expect(r.skipped).toBe(1);
+  });
+  it('暗牌全部加入暗手', async () => {
+    const { addScanned } = await import('../src/ui/builder');
+    const r = addScanned(initialState(), parseTiles('123m 55p'), false);
+    expect(r.state.concealed).toHaveLength(5);
+  });
+});

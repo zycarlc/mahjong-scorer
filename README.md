@@ -4,7 +4,7 @@
 
 ```bash
 npm install
-npm run dev      # 開發伺服器（--host，手機可用區網 IP 開啟）
+npm run dev      # 開發伺服器（--host，自簽 HTTPS；手機用 https://區網IP:5173 開啟，首次須信任憑證才可用鏡頭）
 npm test         # 測試
 npm run build    # 輸出到 dist/
 ```

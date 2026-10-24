@@ -1,5 +1,5 @@
 import { meldTiles } from '../engine/shapes';
-import { isHonor, numOf, sortTiles, tileIndex } from '../engine/tiles';
+import { indexTile, isHonor, numOf, sortTiles, tileIndex } from '../engine/tiles';
 import type { Flags, FlowerWin, Meld, MeldKind, WinInput, WinType, Wind } from '../engine/types';
 
 /** 砌牌器的輸入模式：點選牌時加到哪裡 */
@@ -77,6 +77,62 @@ export function addTile(s: FormState, mode: Mode, tile: string): FormState | str
     if (usedCount(s, t) + n > 4) return mode === 'chow' ? '這款牌已經用了四張' : '剩下不夠張數（同一款牌最多四張）';
   }
   return { ...s, melds: [...s.melds, meld] };
+}
+
+/** 暗牌（暗手、食糊牌、暗槓）；其餘為明牌（上、碰、明槓、加槓） */
+export function isConcealedMode(mode: Mode): boolean {
+  return mode === 'concealed' || mode === 'win' || mode === 'concealedKong';
+}
+
+/**
+ * 把辨識到的牌加入手牌。
+ * 暗牌：全部加入暗手。
+ * 明牌：自動砌成牌組（四張同款為槓、三張同款為碰、連續三張為上），砌不成的略過。
+ */
+export function addScanned(s: FormState, tiles: string[], exposed: boolean, kongKind: MeldKind = 'kong'): { state: FormState; added: number; skipped: number } {
+  let cur = s;
+  let added = 0;
+  let skipped = 0;
+  if (!exposed) {
+    for (const t of tiles) {
+      const next = addTile(cur, 'concealed', t);
+      if (typeof next === 'string') skipped++;
+      else {
+        cur = next;
+        added++;
+      }
+    }
+    return { state: cur, added, skipped };
+  }
+  const counts = new Array<number>(34).fill(0);
+  for (const t of tiles) counts[tileIndex(t)]++;
+  const take = (kind: MeldKind, i: number, n: number) => {
+    const next = addTile(cur, kind, indexTile(i));
+    if (typeof next === 'string') skipped += n;
+    else {
+      cur = next;
+      added += n;
+    }
+  };
+  const kk: MeldKind = kongKind === 'chow' || kongKind === 'pung' ? 'kong' : kongKind;
+  for (let i = 0; i < 34; i++) {
+    if (counts[i] >= 4) {
+      take(kk, i, 4);
+      counts[i] -= 4;
+    }
+    if (counts[i] === 3) {
+      take('pung', i, 3);
+      counts[i] = 0;
+    }
+    while (counts[i] > 0 && !isHonor(i) && numOf(i) <= 7 && counts[i + 1] > 0 && counts[i + 2] > 0) {
+      take('chow', i, 3);
+      counts[i]--;
+      counts[i + 1]--;
+      counts[i + 2]--;
+    }
+    skipped += counts[i];
+  }
+  return { state: cur, added, skipped };
 }
 
 export function removeConcealed(s: FormState, index: number): FormState {

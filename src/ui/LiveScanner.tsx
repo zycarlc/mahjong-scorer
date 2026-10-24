@@ -1,7 +1,7 @@
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { tileName } from '../engine/tiles';
-import type { Detection } from '../vision/postprocess';
+import { voteDetections, type Detection } from '../vision/postprocess';
 import { Tile } from './Tile';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
   /** 鏡頭無法使用時改用系統相機 */
   onFallback: () => void;
 }
+
+const VOTE_MS = 1000;
 
 /** 即時鏡頭辨識：一邊對準一邊顯示辨識結果，滿意便採用 */
 export function LiveScanner({ onResult, onClose, onFallback }: Props) {
@@ -37,11 +39,20 @@ export function LiveScanner({ onResult, onClose, onFallback }: Props) {
         setSize([v.videoWidth, v.videoHeight]);
         const { detectTiles } = await import('../vision/detect');
         setStatus('載入辨識模型…');
+        // 每秒把這一秒內所有幀投票一次，才更新結果
+        let frames: Detection[][] = [];
+        let last = performance.now();
         while (running) {
           const found = await detectTiles(v);
           if (!running) break;
-          setDets(found);
-          setStatus('');
+          frames.push(found);
+          const now = performance.now();
+          if (now - last >= VOTE_MS) {
+            setDets(voteDetections(frames));
+            setStatus('');
+            frames = [];
+            last = now;
+          }
           // 讓出一個畫面，避免卡住介面
           await new Promise((r) => requestAnimationFrame(r));
         }
@@ -112,7 +123,7 @@ export function LiveScanner({ onResult, onClose, onFallback }: Props) {
           </>
         ) : (
           <>
-            <p class="muted small">將牌排成一行、正面向上，移動鏡頭直至下面的牌全部正確。</p>
+            <p class="muted small">將牌排成一行、正面向上，鏡頭靜止；結果每秒綜合多幀更新一次。</p>
             <div class="tiles wrap live-tiles">
               {tiles.length === 0 ? <span class="muted small">未辨識到牌</span> : tiles.map((t, i) => <Tile key={`${t}${i}`} t={t} size="sm" />)}
             </div>

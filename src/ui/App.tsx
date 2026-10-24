@@ -3,35 +3,25 @@ import type { ComponentChildren } from 'preact';
 import { evaluate } from '../engine/score';
 import { DISCREPANCIES } from '../engine/fanTable';
 import { meldTiles } from '../engine/shapes';
-import { ALL_TILES, FLOWERS, WINDS, WIND_NAMES, tileName } from '../engine/tiles';
+import { WINDS, WIND_NAMES, tileName } from '../engine/tiles';
 import type { Flags, MeldKind, ScoreResult, WinType, Wind } from '../engine/types';
 import {
+  addScanned,
   addTile,
   concealedTarget,
   initialState,
   removeConcealed,
   removeMeld,
   toInput,
-  usedCount,
   type FormState,
   type Mode,
 } from './builder';
 import { CheatSheet } from './CheatSheet';
 import { PullCard } from './PullCard';
-import { Scanner } from './Scanner';
+import { InputDrawer } from './InputDrawer';
 import { Tile } from './Tile';
 
 const SETTINGS_KEY = 'mahjong-scorer:settings';
-
-const MODES: { mode: Mode; label: string }[] = [
-  { mode: 'concealed', label: '暗手' },
-  { mode: 'win', label: '食糊牌' },
-  { mode: 'chow', label: '上' },
-  { mode: 'pung', label: '碰' },
-  { mode: 'kong', label: '明槓' },
-  { mode: 'addedKong', label: '加槓' },
-  { mode: 'concealedKong', label: '暗槓' },
-];
 
 const MELD_LABEL: Record<MeldKind, string> = {
   chow: '上',
@@ -68,6 +58,7 @@ export function App() {
   const [toast, setToast] = useState<string>();
   const [result, setResult] = useState<ScoreResult>();
   const [cheatOpen, setCheatOpen] = useState(false);
+  const [inputOpen, setInputOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
   const update = (next: FormState) => {
@@ -103,19 +94,13 @@ export function App() {
     update(next);
     // 暗手滿了便自動轉去揀食糊牌
     if (m === 'concealed' && next.concealed.length === concealedTarget(next) && !next.winningTile) setMode('win');
-    if (m !== 'concealed' && m !== 'win' && m !== 'flower') setMode('concealed');
   };
 
-  const applyScan = (tiles: string[]) => {
-    let cur = s;
-    let skipped = 0;
-    for (const t of tiles) {
-      const next = addTile(cur, 'concealed', t);
-      if (typeof next === 'string') skipped++;
-      else cur = next;
-    }
-    update(cur);
-    setToast(skipped ? `已加入 ${tiles.length - skipped} 張，${skipped} 張因超出張數或四張上限而略過` : `已加入 ${tiles.length} 張`);
+  const applyScan = (tiles: string[], exposed: boolean) => {
+    const { state, added, skipped } = addScanned(s, tiles, exposed, mode === 'concealed' || mode === 'win' || mode === 'flower' ? undefined : mode);
+    update(state);
+    const unit = exposed ? '張（砌成明牌）' : '張';
+    setToast(skipped ? `已加入 ${added} ${unit}，${skipped} 張因砌不成牌組、超出張數或四張上限而略過` : `已加入 ${added} ${unit}`);
   };
 
   const setWinType = (winType: WinType) => {
@@ -232,7 +217,7 @@ export function App() {
                   </span>
                 </div>
                 {s.concealed.length === 0 ? (
-                  <div class="empty">點選下面的牌加入暗手</div>
+                  <div class="empty">按下面「砌牌」加入暗手</div>
                 ) : (
                   <div class="tiles wrap">
                     {s.concealed.map((t, i) => (
@@ -251,7 +236,7 @@ export function App() {
                     <Tile t={s.winningTile} highlight />
                   </button>
                 ) : (
-                  <div class="empty">{mode === 'win' ? '點選下面的牌' : '未選'}</div>
+                  <div class="empty">未選</div>
                 )}
               </div>
             </>
@@ -272,37 +257,9 @@ export function App() {
             )}
           </div>
 
-          <div class="picker">
-            {!isFlowerWin && <Scanner onApply={applyScan} />}
-            {!isFlowerWin && (
-              <>
-                <div class="modes" role="tablist">
-                  {MODES.map(({ mode: m, label }) => (
-                    <button key={m} role="tab" aria-selected={mode === m} class={mode === m ? 'mode on' : 'mode'} onClick={() => setMode(m)}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <p class="mode-hint">{modeHint(mode)}</p>
-                {[0, 1, 2, 3].map((row) => (
-                  <div class="palette" key={row}>
-                    {ALL_TILES.slice(row * 9, row * 9 + 9).map((t) => (
-                      <button key={t} class="tile-btn" onClick={() => pick(t)} aria-label={tileName(t)}>
-                        <Tile t={t} dim={usedCount(s, t) >= 4} />
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </>
-            )}
-            <div class="palette flowers">
-              {FLOWERS.map((t) => (
-                <button key={t} class={s.flowers.includes(t) ? 'tile-btn picked' : 'tile-btn'} onClick={() => pick(t)} aria-pressed={s.flowers.includes(t)}>
-                  <Tile t={t} dim={!s.flowers.includes(t)} />
-                </button>
-              ))}
-            </div>
-          </div>
+          <button class="add-btn" onClick={() => setInputOpen(true)}>
+            ＋ {isFlowerWin ? '揀花' : '砌牌／影相輸入'}
+          </button>
         </Card>
 
         {!isFlowerWin && <ConditionsCard s={s} setFlag={setFlag} />}
@@ -347,6 +304,20 @@ export function App() {
         </button>
       </div>
 
+      <InputDrawer
+        open={inputOpen}
+        onClose={() => setInputOpen(false)}
+        s={s}
+        mode={mode}
+        setMode={setMode}
+        flowersOnly={isFlowerWin}
+        onPick={pick}
+        onScan={applyScan}
+        onRemoveConcealed={(i) => update(removeConcealed(s, i))}
+        onRemoveMeld={(i) => update(removeMeld(s, i))}
+        onClearWin={() => update({ ...s, winningTile: undefined })}
+      />
+
       <CheatSheet open={cheatOpen} onClose={() => setCheatOpen(false)} />
 
       {toast && (
@@ -356,19 +327,6 @@ export function App() {
       )}
     </div>
   );
-}
-
-function modeHint(mode: Mode): string {
-  switch (mode) {
-    case 'concealed':
-      return '點牌加入暗手（不包括食糊牌）；點暗手的牌可移除';
-    case 'win':
-      return '點選食糊的那一張牌';
-    case 'chow':
-      return '上：點選順子最細的一張，例如點三萬即三四五萬';
-    default:
-      return `${MODES.find((m) => m.mode === mode)!.label}：點選該款牌`;
-  }
 }
 
 function ConditionsCard({ s, setFlag }: { s: FormState; setFlag: <K extends keyof Flags>(k: K, v: Flags[K]) => void }) {

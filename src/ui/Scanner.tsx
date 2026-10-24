@@ -5,10 +5,11 @@ import { Tile } from './Tile';
 
 interface Props {
   onApply: (tiles: string[]) => void;
+  applyLabel?: string;
 }
 
 /** 鏡頭即時辨識／選相辨識麻雀牌，確認後加入暗手 */
-export function Scanner({ onApply }: Props) {
+export function Scanner({ onApply, applyLabel = '加入暗手' }: Props) {
   const camera = useRef<HTMLInputElement>(null);
   const album = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string>();
@@ -100,7 +101,7 @@ export function Scanner({ onApply }: Props) {
                     setFound(undefined);
                   }}
                 >
-                  加入暗手
+                  {applyLabel}
                 </button>
                 <button class="scan-btn ghost" onClick={() => setFound(undefined)}>
                   取消
