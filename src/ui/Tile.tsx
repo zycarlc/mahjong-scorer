@@ -12,6 +12,7 @@ interface Props {
 const GREEN = '#1f7a3a';
 const RED = '#c0392b';
 const BLUE = '#1f5fa8';
+const SOU_DARK = '#1d4a3a';
 
 /** 筒子點位（viewBox 30×40）[cx, cy] */
 const PIN_POS: Record<number, [number, number][]> = {
@@ -26,16 +27,16 @@ const PIN_POS: Record<number, [number, number][]> = {
   9: [[7, 9], [15, 9], [23, 9], [7, 20], [15, 20], [23, 20], [7, 31], [15, 31], [23, 31]],
 };
 
-/** 索子每行條數 */
-const SOU_ROWS: Record<number, number[]> = {
-  2: [1, 1],
-  3: [1, 2],
-  4: [2, 2],
-  5: [2, 1, 2],
-  6: [3, 3],
-  7: [1, 3, 3],
-  8: [4, 4],
-  9: [3, 3, 3],
+/** 索子三欄的 x 位置（欄距相等）；每行列出用到的欄 */
+const SOU_COLS = [6.5, 15, 23.5];
+const SOU_ROWS: Record<number, number[][]> = {
+  2: [[1], [1]],
+  3: [[1], [0, 2]],
+  4: [[0, 2], [0, 2]],
+  5: [[0, 2], [1], [0, 2]],
+  6: [[0, 1, 2], [0, 1, 2]],
+  7: [[1], [0, 1, 2], [0, 1, 2]],
+  9: [[0, 1, 2], [0, 1, 2], [0, 1, 2]],
 };
 
 function pinColor(n: number, i: number, total: number): string {
@@ -64,11 +65,26 @@ function Pin({ n }: { n: number }) {
   );
 }
 
+/** 索條：深色外框、淺色內芯，中間一節（仿實體牌上的竹節） */
 function Stick({ x, y, h, c }: { x: number; y: number; h: number; c: string }) {
   return (
     <g>
-      <rect x={x - 1.8} y={y} width="3.6" height={h} rx="1.6" fill={c} />
-      <rect x={x - 2.2} y={y + h / 2 - 0.7} width="4.4" height="1.4" fill="#fffdf5" opacity="0.85" />
+      <rect x={x - 2.1} y={y} width="4.2" height={h} rx="2" fill="#fffdf5" stroke={c} stroke-width="1.3" />
+      <rect x={x - 0.7} y={y + 2} width="1.4" height={h - 4} rx="0.7" fill={c} opacity="0.55" />
+      <rect x={x - 2.3} y={y + h / 2 - 0.6} width="4.6" height="1.2" fill={c} />
+    </g>
+  );
+}
+
+/** 八索：上 W、下 M 的折線條，左右兩邊垂直 */
+function Zigzag({ y, up, c }: { y: number; up: boolean; c: string }) {
+  const pts: [number, number][] = [[5, 0], [5, 14], [15, 5], [25, 14], [25, 0]];
+  const d = pts.map(([px, py], i) => `${i ? 'L' : 'M'}${px} ${y + (up ? 14 - py : py)}`).join(' ');
+  return (
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <path d={d} stroke={c} stroke-width="4.4" />
+      <path d={d} stroke="#fffdf5" stroke-width="2.2" />
+      <path d={d} stroke={c} stroke-width="0.9" opacity="0.55" />
     </g>
   );
 }
@@ -85,19 +101,25 @@ function Sou({ n }: { n: number }) {
       </svg>
     );
   }
+  if (n === 8) {
+    return (
+      <svg viewBox="0 0 30 40" class="tile-art" aria-hidden="true">
+        <Zigzag y={4} up={false} c={SOU_DARK} />
+        <Zigzag y={24} up c={SOU_DARK} />
+      </svg>
+    );
+  }
   const rows = SOU_ROWS[n];
-  const rowH = rows.length === 2 ? 14 : 9;
-  const gapY = rows.length === 2 ? 16 : 11;
+  const tall = rows.length === 2 || n === 5;
+  const rowH = tall ? 14 : 9;
+  const gapY = tall ? 16 : 11;
   const top = (40 - (gapY * (rows.length - 1) + rowH)) / 2;
-  let k = 0;
   return (
     <svg viewBox="0 0 30 40" class="tile-art" aria-hidden="true">
-      {rows.map((cnt, ri) =>
-        Array.from({ length: cnt }, (_, ci) => {
-          const x = 15 + (ci - (cnt - 1) / 2) * 7.5;
-          const idx = k++;
-          const c = n === 5 && ri === 1 ? RED : idx % 2 ? BLUE : GREEN;
-          return <Stick key={`${ri}-${ci}`} x={x} y={top + ri * gapY} h={rowH} c={c} />;
+      {rows.map((cols, ri) =>
+        cols.map((ci) => {
+          const c = (n === 5 && ri === 1) || (n === 7 && ri === 0) || (n === 9 && ri === 1) ? RED : SOU_DARK;
+          return <Stick key={`${ri}-${ci}`} x={SOU_COLS[ci]} y={n === 5 ? (ri === 1 ? 13 : 5 + (ri / 2) * 16) : top + ri * gapY} h={rowH} c={c} />;
         }),
       )}
     </svg>
